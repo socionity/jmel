@@ -1,0 +1,21 @@
+body {
+  padding: 36px;
+  font: 14px;
+}
+
+a {
+  color: #00B7FF;
+}
+
+nav>a {
+  padding-top: 12px;
+  display: inline-block;
+}
+.socialbuttonholder {
+  white-space: nowrap;
+  width: 100%;
+}
+.socialbutton {
+  margin-right: 12px;
+  display: inline-block;
+}
