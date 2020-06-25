@@ -1,0 +1,24 @@
+extends layout-user
+
+block content
+    h1 Welcome back!
+    if showScratchCard
+        h2 You have a scratch card waiting to be opened
+        div(class="card bg-dark text-white")
+            div(class="card-body")
+                p Guaranteed payout : #{guaranteedBounty}
+                p Maximum lucky payout: #{maxBounty}
+                p Total available bounty: #{btcBalance}
+                p You can increase your bounty by inviting more users
+                p Share this link to invite : #[a(href=url) #{url}]
+                form(action=`/u/${creatorUsername}/scratchcards`, method="post")
+                    input(name="btcAddress",value=btcAddress,placeholder="BTC Address" )
+                    input(type="submit", value="Open Scratch Card")
+    else
+        br
+        h2 Your next scratch yet to unlock
+        p Your next scratch card will be available #{scratchFromNow}
+        h2 Earn more
+        p You can increase your bounty by inviting more users
+        p Share this link to invite : #[a(href=url) #{url}]
+

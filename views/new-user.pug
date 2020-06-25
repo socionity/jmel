@@ -1,20 +1,18 @@
 extends layout
 
 block content
-    h1 Create your JoinMyList link
+    h1 Create your JoinMyEmailList link
     p Signup &amp; invite your social media followers to join your email list and reward them in BTC!
-    h2 Sign up using
+    h2 Sign-up/Sign-in using
     div(class="socialbuttonholder")
-        button(class="socialbutton") Twitter
+        button(class="socialbutton", onclick="window.location.href='/auth/twitter/creator/request-token'") Twitter
         button(disabled, class="socialbutton") Instagram
-        br
-        br
         button(disabled, class="socialbutton") Facebook
         button(disabled, class="socialbutton") LinkedIn
     br
     br
     h1 How it works
-    p JoinMyList helps you build your own following without having to depend on any social media company. JoinMyList incentivizes your followers to join the email list with rewards.
+    p JoinMyEmailList helps you build your own following without having to depend on any social media company. JoinMyEmailList incentivizes your followers to join the email list with BTC rewards.
     ol
         li Sign up using one of your social media profiles and generate a link.
         li Share the link on social media or direct messages. Users can sign up to your email list using this link.
@@ -22,5 +20,9 @@ block content
         li Each user who signs up gets a referral link. If she shares the referral link and her friends sign up, the probability of rewards on her scratch card increase!
     br
     br
-    h1 Who's using JoinMyList
-    p Coming soon ...
+    h1 Who's using JoinMyEmailList
+    table
+        each creator in creators
+            tr
+                td @#{creator.usernameOriginal}
+                td #{creator.followerCount} followers

@@ -1,0 +1,15 @@
+extends layout-user
+
+block content
+    h1 Join #{name}'s email list
+    p 
+        i #{welcome}
+    h2 Sign up with a social media account
+    p Sign up and win a scratch card to win upto BTC #{btcBalance}
+    div(class="socialbuttonholder")
+    button(class="socialbutton", onclick="window.location.href='/auth/twitter/user/request-token'") Twitter
+    button(disabled, class="socialbutton instagram") Instagram
+    button(disabled, class="socialbutton facebook") Facebook
+    button(disabled, class="socialbutton linkedin") LinkedIn
+    br
+    

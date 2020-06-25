@@ -1,0 +1,11 @@
+extends layout
+block content
+    h1 All your subscribers
+    a(href="/profile/subscribers?action=download") Export all emails
+    table(class="table")
+        tr
+            th Email
+        for user in users
+            tr
+                td #{user.email}
+    p #[a(href=`/profile/subscribers?cursor=${previousCursor}`) Previous] &nbsp; &nbsp; #[a(href=`/profile/subscribers?cursor=${nextCursor}`) Next]

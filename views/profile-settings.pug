@@ -1,0 +1,21 @@
+extends layout
+block content
+    h1 Settings
+    h2 JMEL link
+    p Share this link with your followers : #[a(href=url) #{url}]
+    h2 Messaging
+    form(action="/profile/settings", method="POST")
+        p Explain why a user should join your email list
+        textarea(name="welcome", cols="30", rows="10") #{welcomeMessage}
+        br
+        p Thank you message after the user joins your email list
+        textarea(name="thanks", cols="30", rows="10") #{thankyouMessage}
+        br
+        input(type="submit", value="Save")
+    br
+    h2 Bounty
+    p Fuel this BTC address to distribute bounty in accordance to #[a(href="/docs/bountyrules") these rules]
+    p #[pre #{btcAddress}]
+    p Current balance : BTC #{btcBalance}
+
+    

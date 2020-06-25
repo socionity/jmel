@@ -1,5 +1,4 @@
 body {
-  padding: 36px;
   font: 14px;
 }
 
@@ -18,4 +17,9 @@ nav>a {
 .socialbutton {
   margin-right: 12px;
   display: inline-block;
+}
+.container {
+  max-width: 800px;
+  width: 100%;
+  margin: auto;
 }

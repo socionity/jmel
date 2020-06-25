@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1 Welcome to JMEL
+  p Your JMEL link has been created
+  p Proceed to #[a(href=`/profile/settings`) settings] before you start distributing your link on social media
+  br
+  br
+  p Your sharable link is #[pre #{url}]
+  h2 Keep your BTC keys safe
+  p Save this in a secure place. You will not be able to download the keys once you leave this screen.
+  p Public Key : #{btcPublic}
+  p Private Key : #{btcPrivate}
