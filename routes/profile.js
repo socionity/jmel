@@ -105,7 +105,7 @@ router.post('/followers/invitations', function(req, res, next) {
             });
             new Promise( async (resolve, reject ) => {
                 try{
-                const followers = await FollowerModel.find({ creator: creator.username, invited: false }).sort('-score').limit(PAGE_SIZE);
+                const followers = await FollowerModel.find({ creator: req.session.username, invited: false }).sort('-score').limit(PAGE_SIZE);
                 for(let i = 0 ; i < followers.length; i += 1){
                     const follower = followers[i];
                     const username = follower.username.substr(2);
@@ -117,9 +117,11 @@ router.post('/followers/invitations', function(req, res, next) {
                             "message_data": {"text": `${creator.welcomeMessage}\n${Root}/u/${creator.username}`}
                         }
                     }};
-                    await client.post('direct_messages/events/new', params);
-                    follower.invited = true;
-                    follower.save();
+		    try{
+                        await client.post('direct_messages/events/new', params);
+                        follower.invited = true;
+                        follower.save();
+		    } catch(e2){}
                 }
                 }catch(e) {
                     console.error(e);
