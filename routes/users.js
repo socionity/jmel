@@ -25,6 +25,8 @@ router.get('/:username', function(req, res, next) {
       const proportionalBounty = balance * 0.25;
       const luckyBounty = balance * 0.25;
 
+      const leaderboard = await SubscriberModel.aggregate([{$match: { creator: req.session.creator }}]).group({ _id: '$ref', numberOfInvites: {$sum: 1}});
+      const leaders = leaderboard.filter(user => user._id !== 'self').sort((user1, user2) => user2.numberOfInvites - user1.numberOfInvites).map((user, index) => ({...user, index: index + 1})).filter(user => user.index < 10 || user._id === req.session.user);
       const subscriber = await SubscriberModel.findOne({ username: req.session.user, creator: req.session.creator });
       const allSubs = await SubscriberModel.find({});
       const lastScratch = subscriber.lastScratchTimestamp;
@@ -51,7 +53,7 @@ router.get('/:username', function(req, res, next) {
       }
       guaranteedBounty += (userInvitations/(totalInvitations + 1));
       maxBounty += guaranteedBounty + 0.25;
-      res.render('users-old', { maxBounty: maxBounty * balance, guaranteedBounty: guaranteedBounty * balance, btcBalance: balance, url: `${Root}/u/${req.session.creator}?ref=${req.session.user}`, btcAddress: subscriber.btcAddress || "", showScratchCard: Date.now() > lastScratch + (24*60*60*1000), scratchFromNow: moment(lastScratch + (24*60*60*1000)).fromNow(), creatorUsername: username, messageText: req.query.message, messageType: req.query.messageType});
+      res.render('users-old', { maxBounty: maxBounty * balance, guaranteedBounty: guaranteedBounty * balance, btcBalance: balance, url: `${Root}/u/${req.session.creator}?ref=${req.session.user}`, btcAddress: subscriber.btcAddress || "", showScratchCard: Date.now() > lastScratch + (24*60*60*1000), scratchFromNow: moment(lastScratch + (24*60*60*1000)).fromNow(), creatorUsername: username, messageText: req.query.message, messageType: req.query.messageType, leaders});
     }
   });
 });
@@ -72,6 +74,7 @@ router.post('/:username/scratchcards', async function(req, res) {
   const subscriber = await SubscriberModel.findOne({ username: req.session.user, creator: req.session.creator });
   const lastScratch = subscriber.lastScratchTimestamp;
   const subscribersSinceLastScratch = await SubscriberModel.aggregate([{$match: { creator: req.session.creator, timestamp: {$gt: lastScratch } }}]).group({ _id: '$ref', numberOfInvites: {$sum: 1}});
+
 
   let topInvitations = 0;
   let userInvites = 0;
@@ -97,7 +100,6 @@ router.post('/:username/scratchcards', async function(req, res) {
 
   const bountyBTC = bounty * balance ;
   const bountySatoshi = bountyBTC * 100000000;
-
   if(bountySatoshi < 1000) {
     subscriber.lastScratchTimestamp = Date.now();
     subscriber.save();  
@@ -113,11 +115,12 @@ router.post('/:username/scratchcards', async function(req, res) {
   var tx = new bitcoin.Psbt();
   for(let i = 0; i < utxos.length;i += 1){
     let utxo = utxos[i];
-    const txRaw = await Axios.get('https://api.smartbit.com.au/v1/blockchain/transaction/'+utxo.txid+'/hex');
-    tx.addInput({ hash: utxo.txid, index: utxo.n, nonWitnessUtxo: Buffer.from(txRaw.data.hex[i].hex, 'hex'), });
+	  const txRaw = await Axios.get(`https://sochain.com/api/v2/get_tx/BTC/${utxo.txid}`)
+	  const txdata = txRaw.data.data;
+    tx.addInput({ hash: utxo.txid, index: utxo.n, nonWitnessUtxo: Buffer.from(txdata.tx_hex, 'hex'), });
   }
-  tx.addOutput({ address: req.body.btcAddress, value: bountySatoshi});
-  tx.addOutput({ address: creator.btcAddress, value: (balance*100000000) - bountySatoshi - fees * 290});
+  tx.addOutput({ address: req.body.btcAddress, value: Math.floor(bountySatoshi)});
+  tx.addOutput({ address: creator.btcAddress, value: Math.floor((balance*100000000) - bountySatoshi - fees * 290)});
   tx.signInput(0, key);
   tx.validateSignaturesOfInput(0);
   tx.finalizeAllInputs();
@@ -125,9 +128,11 @@ router.post('/:username/scratchcards', async function(req, res) {
   const transactionPushResponse = await Axios.post("https://api.smartbit.com.au/v1/blockchain/pushtx", { hex: tx.extractTransaction().toHex() });
   subscriber.lastScratchTimestamp = Date.now();
   subscriber.save();
+  const txId = transactionPushResponse.data.txid;
+  res.redirect(`/u/${req.session.creator}?message=BTC ${bountyBTC} transfered in transaction ID ${txId}&messageType=success`);
 
   }catch(e){
-    console.error(e.response.data.error);
+    console.error(e);
     res.redirect('/u/'+creatorUsername+"?message=Unable to open scratchcard because of a spike in traffic. Please try again.&messageType=danger");
   }
 

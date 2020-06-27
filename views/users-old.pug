@@ -22,3 +22,15 @@ block content
         p You can increase your bounty by inviting more users
         p Share this link to invite : #[a(href=url) #{url}]
 
+    br
+    h1 Top inviters
+    table(class="table")
+        tr
+            th Rank
+            th Username
+            th Number of Invitations
+        for leader in leaders
+            tr
+                td #{leader.index}
+                td #{leader._id}
+                td #{leader.numberOfInvites}

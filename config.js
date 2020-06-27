@@ -2,10 +2,16 @@
 // Twitter App that has access to read, write, email
 exports.TwitterWithWritePermissionsAccessKey = "";
 exports.TwitterWithWritePermissionsAccessSecret = "";
+    //callback url : <protocol>://<domain>/auth/twitter/creator/callback
+    // e.g. https://jmel.org/auth/twitter/creator/callback
+
+
 
 //Twitter App that has access to read, email
 exports.TwitterWithReadPermissionsAccessKey = "";
 exports.TwitterWithReadPermissionsAccessSecret = "";
+    //callback url : <protocol>://<domain>/auth/twitter/user/callback
+    // e.g. https://jmel.org/auth/twitter/user/callback
 
 // e.g. https://jmel.org
 exports.Root = "";
@@ -22,4 +28,4 @@ exports.HTTPSPort = 443;
 exports.MongoDBConnection = "";
 
 
-
+// npm start to run

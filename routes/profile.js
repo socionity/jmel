@@ -38,8 +38,8 @@ router.get('/followers', function(req, res, next) {
         return res.redirect('/?message=You must sign in to see your followers&messageType=danger');
     const cursor = parseInt(req.query.cursor || 0);
     CreatorModel.findOne({ usernameHash: req.session.username }).then(async (creator) => {
-       const followers = await FollowerModel.find({}).skip(cursor).sort('-score').limit(PAGE_SIZE);
-       const loadedFollowerCount = await FollowerModel.count();
+       const followers = await FollowerModel.find({ creator: req.session.username }).skip(cursor).sort('-score').limit(PAGE_SIZE);
+       const loadedFollowerCount = await FollowerModel.find({ creator: req.session.username}).count();
        const totalFollowerCount = creator.followerCount;
        res.render('profile-followers', { followers, loadedFollowerCount, totalFollowerCount, nextCursor: cursor + PAGE_SIZE, previousCursor: Math.max(cursor - PAGE_SIZE,0),messageText: req.query.message, messageType: req.query.messageType });
     }).catch(console.error);
@@ -69,7 +69,7 @@ router.post('/followers', function(req, res, next) {
                             const follower = await FollowerModel.findOne({ username });
                             if(!follower){
                                 let score = (100 * user.followers_count / user.friends_count ) + (user.verified?100:0);
-                                const f = new FollowerModel({ username, socialmedia: 'twitter', invited: false, score, userId });
+                                const f = new FollowerModel({ creator: req.session.username, username, socialmedia: 'twitter', invited: false, score, userId });
                                 f.save();
                             }
                         }
@@ -105,11 +105,11 @@ router.post('/followers/invitations', function(req, res, next) {
             });
             new Promise( async (resolve, reject ) => {
                 try{
-                const followers = await FollowerModel.find({ invited: false }).sort('-score').limit(PAGE_SIZE);
+                const followers = await FollowerModel.find({ creator: creator.username, invited: false }).sort('-score').limit(PAGE_SIZE);
                 for(let i = 0 ; i < followers.length; i += 1){
                     const follower = followers[i];
                     const username = follower.username.substr(2);
-                    if(username!=='madhavanmalolan') continue; //todo remove
+                    //if(username!=='madhavanmalolan') continue; //todo remove
                     const params = {"event": {
                         "type": "message_create", 
                         "message_create": {
@@ -137,9 +137,11 @@ router.post('/followers/invitations', function(req, res, next) {
 router.get('/subscribers', async function(req, res, next) {
     if(!req.session.username)
         return res.redirect('/?message=You must be logged in&messageType=danger')
+    const creator = await CreatorModel.findOne({ usernameHash: req.session.username });
+	 console.log(creator, creator.username);
     if(req.query.action === 'download'){
         let data = 'email,timestamp,score\n';
-        const subscribers = await SubscriberModel.find({}).sort('-timestamp');
+        const subscribers = await SubscriberModel.find({ creator: creator.username }).sort('-timestamp');
         for(let i = 0 ; i < subscribers.length; i += 1){
             const subscriber = subscribers[i];
             data+= `${subscriber.email},${subscriber.timestamp},${subscriber.score}\n`;
@@ -149,7 +151,8 @@ router.get('/subscribers', async function(req, res, next) {
 
     else {
         let cursor = parseInt(req.query.cursor || 0);
-        const subscribers = await SubscriberModel.find({}).sort('-timestamp').skip(cursor).limit(PAGE_SIZE);
+	    console.log(await SubscriberModel.find({}))
+        const subscribers = await SubscriberModel.find({creator: creator.username}).sort('-timestamp').skip(cursor).limit(PAGE_SIZE);
         res.render('profile-subscribers', { nextCursor: cursor + PAGE_SIZE, previousCursor: Math.max(cursor - PAGE_SIZE, 0), users: subscribers, messageText: req.query.message, messageType: req.query.messageType});
     }
 })

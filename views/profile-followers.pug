@@ -1,23 +1,29 @@
 extends layout
 block content
     h1 Invite Your Followers
-    p #{loadedFollowerCount} followers mined out of #{totalFollowerCount}
-    form(action="/profile/followers", method="post")
-        input(type="submit", value="Refresh")
+    p #{loadedFollowerCount} followers loaded out of #{totalFollowerCount}
+    if loadedFollowerCount < totalFollowerCount
+        form(action="/profile/followers", method="post")
+            input(type="submit", value="Load Followers")
 
     br
     h2 Top followers
-    form(action="/profile/followers/invitations", method="post")
-        input(type="submit", value="Invite top 1000 un-invited followers")
-    br
-    table(class="table")
-        tr
-            th Username
-            th Loyalty Score
-            th Invite Status
-        for follower in followers
-            tr
-                td #{follower.username}
-                td #{follower.score}
-                td #{follower.invited?"Invited":"Not Invited"}
-    p #[a(href=`/profile/followers?cursor=${previousCursor}`) &lt; Previous] &nbsp; &nbsp; #[a(href=`/profile/followers?cursor=${nextCursor}`) Next &gt;]
+    if loadedFollowerCount > 0
+        div
+            p Inviting using the following button will send a DM to 1,000 top followers requesting them to join your email list.
+            form(action="/profile/followers/invitations", method="post")
+                input(type="submit", value="Invite top 1000 un-invited followers")
+            br
+            table(class="table")
+                tr
+                    th Username
+                    th Loyalty Score
+                    th Invite Status
+                for follower in followers
+                    tr
+                        td #{follower.username}
+                        td #{follower.score}
+                        td #{follower.invited?"Invited":"Not Invited"}
+            p #[a(href=`/profile/followers?cursor=${previousCursor}`) &lt; Previous] &nbsp; &nbsp; #[a(href=`/profile/followers?cursor=${nextCursor}`) Next &gt;]
+    else
+        p Please load the subscribers. Once loaded, you can see your most loyal fans here and invite them using DMs.

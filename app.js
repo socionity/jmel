@@ -19,12 +19,12 @@ var session = require('express-session');
 
 var fs = require('fs');
 var http = require('http');
-var https = require('https');
+/*var https = require('https');
 var privateKey  = fs.readFileSync(config.SSLPrivateKeyFilePath, 'utf8');
 var certificate = fs.readFileSync(config.SSLCertificateFilePath, 'utf8');
 
 var credentials = {key: privateKey, cert: certificate};
-
+*/
 var app = express();
 
 const url = config.MongoDBConnection;
@@ -74,10 +74,10 @@ app.use(function(err, req, res, next) {
 });
 
 var httpServer = http.createServer(app);
-var httpsServer = https.createServer(credentials, app);
+//var httpsServer = https.createServer(credentials, app);
 
 httpServer.listen(config.HTTPPort);
-httpsServer.listen(config.HTTPSPort);
+//httpsServer.listen(config.HTTPSPort);
 
 
 module.exports = app;

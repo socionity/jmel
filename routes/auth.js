@@ -46,7 +46,7 @@ router.get('/twitter/creator/callback', function(req, res, next) {
                 if (err)
                     res.status(500).send(err);
                 else{
-                    CreatorModel.findOne({ username: `t:${user.name}`}).then(async function (creatorObject) {
+                    CreatorModel.findOne({ username: `t:${user.screen_name}`}).then(async function (creatorObject) {
                         let creator = creatorObject;
                         let isNewCreator = true;
                         if(!creator){
@@ -64,19 +64,19 @@ router.get('/twitter/creator/callback', function(req, res, next) {
                         else {
                             isNewCreator = false;
                         }
-                        creator.username = `t:${user.name}`;
+                        creator.username = `t:${user.screen_name}`;
                         creator.usernameHash = Crypto.createHash('md5').update(`t:${user.id}-twittersalt(3702575e8a179b9878848c76f971b2fc)`).digest('hex');
                         creator.followerCount = user.followers_count;
                         creator.socialmedia = "twitter";
                         creator.name = user.name;
                         creator.picture = user.profile_image_url_https;
-                        creator.usernameOriginal = user.name;
+                        creator.usernameOriginal = user.screen_name;
                         creator.oauth = accessToken;
                         creator.oauthSecret = accessSecret;
                         req.session.username = creator.usernameHash;
                         creator.save();
                         if(isNewCreator){
-                            res.render('new-user-created', { url: `${Root}/u/t:${user.name}`, btcPublic: creator.btcPublic, btcPrivate: creator.btcPrivate, messageText: req.query.message, messageType: req.query.messageType });
+                            res.render('new-user-created', { url: `${Root}/u/t:${user.screen_name}`, btcPublic: creator.btcPublic, btcPrivate: creator.btcPrivate, messageText: req.query.message, messageType: req.query.messageType });
                         }
                         else {
                             res.redirect('/profile/settings');
