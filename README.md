@@ -8,7 +8,7 @@ A simple tool to let influencers create a link using which followers can signup 
 - Influencer types a message that is to be displayed before the users sign up, from the settings tab
 - Influencer goes to the Invite tab and invites the top 1000 followers by sending them a DM (can be repeated multiple times, over days)
 - Influencer can track who all have signed up on the Subscribers tab
-
+![Demo](https://raw.githubusercontent.com/socionity/jmel/master/jmel-influencer.gif)
 
 ## Subscriber Flow
 - Subscriber receives a link
@@ -18,6 +18,15 @@ A simple tool to let influencers create a link using which followers can signup 
 - More the number of people who have registered using the user's link, more the likelihood of winning on the scratch card
 - Subscriber gives the BTC address and opens the scratch card
 - BTC is transferred to the given address. Next scratch card will be available in 24 hours. All affiliate sign ups from this point on will be considered for the next scratchcard's probability.
+![Demo](https://raw.githubusercontent.com/socionity/jmel/master/jmel-subscriber.gif)
+
+
+# Self Hosting
+- Clone this repo
+- install MongoDB
+- Create  Twitter Apps - one with read write & email permsission, another with read and email permission
+- Edit config.js
+- npm start
 
 ## To do
 - SSL/HTTPS
