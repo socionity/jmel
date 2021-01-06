@@ -6,7 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bitcoinjs-lib": "^5.1.10",
     "bluebird": "^3.7.2",
     "cookie-parser": "~1.4.4",
